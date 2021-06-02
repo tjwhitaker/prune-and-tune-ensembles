@@ -129,3 +129,5 @@ dmypy.json
 .pyre/
 
 data/
+src/checkpoints/
+*.pt
