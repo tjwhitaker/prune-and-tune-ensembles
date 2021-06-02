@@ -19,18 +19,16 @@ pip install -r requirements.txt
 
 ## Training
 
-To train the model(s) in the paper, run this command:
+Our code is split up into three commands.
 
-```train
-python train.py --input-data <path_to_data> --alpha 10 --beta 20
-```
+Train the parent network.
 
 ```train
 python train.py --dir=<DIR> \
                 --dataset=<DATASET> \
                 --data_path=<DATA_PATH> \
                 --model=<MODEL> \
-                --epochs=<EPOCHS> \
+                --epochs=<PARENT_EPOCHS> \
                 --optimizer=<OPTIMIZER> \
                 --lr=<LR>
 ```
@@ -45,18 +43,60 @@ Parameters:
   - ResNet
   - DenseNet
   - WideResNet
-- `EPOCHS` &mdash; number of training epochs (default: 200)
-- `OPTIMIZER` &mdash; optimizer name [ADAM/SGD] (default: ADAM)
-- `LR` &mdash; initial learning rate (default: 0.001)
 
-> 📋 Describe how to train the models, with example commands on how to train the models in your paper, including the full training procedure and appropriate hyperparameters.
+Create the ensemble via pruning.
+
+```prune
+python prune.py --dir=<DIR> \
+                --dataset=<DATASET> \
+                --data_path=<DATA_PATH> \
+                --model=<MODEL> \
+                --num_children=<NUM_CHILDREN> \
+                --method=<METHOD>\
+```
+
+Parameters:
+
+- `DIR` &mdash; path to training directory where checkpoints will be stored (default: checkpoints/)
+- `DATASET` &mdash; dataset name [CIFAR10/CIFAR100] (default: CIFAR10)
+- `PATH` &mdash; path to the data directory (default: data/)
+- `MODEL` &mdash; Model name:
+  - LeNet
+  - ResNet
+  - DenseNet
+  - WideResNet
+
+Tune the ensemble.
+
+```tune
+python tune.py --dir=<DIR> \
+               --dataset=<DATASET> \
+               --data_path=<DATA_PATH> \
+               --model=<MODEL> \
+               --epochs=<PARENT_EPOCHS> \
+               --optimizer=<OPTIMIZER> \
+               --lr=<LR> \
+               --schedule=<SCHEDULE>
+```
+
+Parameters:
+
+- `DIR` &mdash; path to training directory where checkpoints will be stored (default: checkpoints/)
+- `DATASET` &mdash; dataset name [CIFAR10/CIFAR100] (default: CIFAR10)
+- `PATH` &mdash; path to the data directory (default: data/)
+- `MODEL` &mdash; Model name:
+  - LeNet
+  - ResNet
+  - DenseNet
+  - WideResNet
 
 ## Evaluation
 
 To evaluate my model on ImageNet, run:
 
-```eval
-python eval.py --model-file mymodel.pth --benchmark imagenet
+```evaluate
+python evaluate.py --dir=<DIR> \
+                   --dataset=<DATASET> \
 ```
 
 > 📋 Describe how to evaluate the trained models on benchmarks reported in the paper, give commands that produce the results (section below).
