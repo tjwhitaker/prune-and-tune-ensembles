@@ -2,9 +2,11 @@
 
 # Prune and Tune Ensembles
 
-This repository is the official implementation of [My Paper Title](https://arxiv.org/abs/2030.12345).
+This repository is the official implementation of [Prune and Tune Ensembles](#).
 
 > 📋 Optional: include a graphic explaining your approach/main result, bibtex entry, link to demos, blog posts and tutorials
+
+![Landscape Visual](./figures/landscape-visual.png)
 
 ## Requirements
 
@@ -23,6 +25,30 @@ To train the model(s) in the paper, run this command:
 ```train
 python train.py --input-data <path_to_data> --alpha 10 --beta 20
 ```
+
+```train
+python train.py --dir=<DIR> \
+                --dataset=<DATASET> \
+                --data_path=<DATA_PATH> \
+                --model=<MODEL> \
+                --epochs=<EPOCHS> \
+                --optimizer=<OPTIMIZER> \
+                --lr=<LR>
+```
+
+Parameters:
+
+- `DIR` &mdash; path to training directory where checkpoints will be stored (default: checkpoints/)
+- `DATASET` &mdash; dataset name [CIFAR10/CIFAR100] (default: CIFAR10)
+- `PATH` &mdash; path to the data directory (default: data/)
+- `MODEL` &mdash; Model name:
+  - LeNet
+  - ResNet
+  - DenseNet
+  - WideResNet
+- `EPOCHS` &mdash; number of training epochs (default: 200)
+- `OPTIMIZER` &mdash; optimizer name [ADAM/SGD] (default: ADAM)
+- `LR` &mdash; initial learning rate (default: 0.001)
 
 > 📋 Describe how to train the models, with example commands on how to train the models in your paper, including the full training procedure and appropriate hyperparameters.
 
