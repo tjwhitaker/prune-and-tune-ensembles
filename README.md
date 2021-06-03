@@ -5,7 +5,8 @@
 This repository is the official implementation of [Prune and Tune Ensembles](#).
 
 ![Landscape Visual](./figures/landscape-visual.png)
-![Anti-Random Networks](./figures/antirandom-networks.png)
+
+<!-- ![Anti-Random Networks](./figures/antirandom-networks.png) -->
 
 ## Requirements
 
