@@ -5,6 +5,8 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+# Courtesy of https://github.com/huyvnphan/PyTorch_CIFAR10
+
 __all__ = ["DenseNet", "densenet121", "densenet169", "densenet161"]
 
 

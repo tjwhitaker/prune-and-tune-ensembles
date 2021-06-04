@@ -7,18 +7,13 @@ from torch.autograd import Variable
 import sys
 import numpy as np
 
-# Courtesy of https://github.com/meliketoy/wide-resnet.pytorch
+# Courtesy of https://github.com/meliketoy/wide-resnet.pytorch and https://github.com/timgaripov/dnn-mode-connectivity
 
 __all__ = ['wideresnet28x10']
 
 
 def conv3x3(in_planes, out_planes, stride=1):
     return nn.Conv2d(in_planes, out_planes, kernel_size=3, stride=stride, padding=1, bias=True)
-
-
-def conv3x3curve(in_planes, out_planes, fix_points, stride=1):
-    return curves.Conv2d(in_planes, out_planes, kernel_size=3, fix_points=fix_points, stride=stride,
-                         padding=1, bias=True)
 
 
 class WideBasic(nn.Module):
@@ -47,9 +42,9 @@ class WideBasic(nn.Module):
         return out
 
 
-class WideResNetBase(nn.Module):
+class WideResNet(nn.Module):
     def __init__(self, depth=28, widen_factor=10, dropout_rate=0., num_classes=100):
-        super(WideResNetBase, self).__init__()
+        super(WideResNet, self).__init__()
         self.in_planes = 16
 
         assert ((depth - 4) % 6 == 0), 'Wide-resnet depth should be 6n+4'
@@ -92,4 +87,4 @@ class WideResNetBase(nn.Module):
 
 
 def wideresnet28x10(**kwargs):
-    return WideResNetBase(28, 10, 0, **kwargs)
+    return WideResNet(28, 10, 0, **kwargs)

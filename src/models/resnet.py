@@ -2,6 +2,8 @@ import torch
 import torch.nn as nn
 import os
 
+# Courtesy of https://github.com/huyvnphan/PyTorch_CIFAR10
+
 __all__ = [
     "ResNet",
     "resnet18",

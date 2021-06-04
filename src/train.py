@@ -103,11 +103,11 @@ torch.save(model.state_dict(), os.path.join(
     args.checkpoint_dir, f"{args.model}-p.pt"))
 
 
-##############################
-# Prune and Tune The Ensemble
-##############################
+######################
+# Create The Ensemble
+######################
 
-# Ensemble members contains a list of paths to the ensemble member state_dicts
+# Ensemble members contains a list of paths to the ensemble member state_dict files
 ensemble_members = create_ensemble(
     args.model,
     num_classes,
@@ -119,6 +119,9 @@ ensemble_members = create_ensemble(
     args.checkpoint_dir,
     device)
 
+####################
+# Tune The Ensemble
+####################
 
 for member_path in ensemble_members:
     architecture = getattr(models, args.model)

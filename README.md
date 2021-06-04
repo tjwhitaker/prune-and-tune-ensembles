@@ -1,6 +1,6 @@
 # Prune and Tune Ensembles
 
-This repository is the official implementation of [Prune and Tune Ensembles](#).
+This repository is the official implementation of [Prune and Tune Ensembles](#). This codebase is still in progress of being cleaned up for eventual open source release.
 
 ![Landscape Visual](./figures/landscape-visual.png)
 
@@ -47,19 +47,19 @@ python train.py --checkpoint_dir=<DIR> \
 
 Parameters:
 
-- `checkpoint_dir` &mdash; (default: checkpoints/)
-- `dataset` &mdash; [cifar10/cifar100] (default: cifar10)
-- `data_path` &mdash; (default: data/)
-- `batch_size` &mdash; (default: 128)
-- `num_workers` &mdash; (default: 4)
-- `model` &mdash; (default: None)
+- `checkpoint_dir` &mdash; where to save the trained model files (default: checkpoints/)
+- `dataset` &mdash; name of the dataset to use [cifar10/cifar100] (default: cifar10)
+- `data_path` &mdash; where to download the datasets (default: data/)
+- `batch_size` &mdash; batch size for both the training and test loaders (default: 128)
+- `num_workers` &mdash; number of workers to use for the data loaders (default: 4)
+- `model` &mdash; name of the model architecture (default: None)
   - resnet18
   - densenet121
   - wideresnet28x10
-- `parent_epochs` &mdash; (default: 140)
-- `save_freq` &mdash; (default: 10)
-- `optimizer` &mdash; [sgd/adam] (default: sgd)
-- `lr` &mdash; (default: 0.1)
+- `parent_epochs` &mdash; number of epochs to train the parent (default: 140)
+- `save_freq` &mdash; save the parent every n epochs during training (default: 10)
+- `optimizer` &mdash; optimizer to use for training the parent network [sgd/~~adam~~] (default: sgd)
+- `lr` &mdash; initial learning rate (default: 0.1)
 - `momentum` &mdash; (default: 0.9)
 - `wd` &mdash; (default: 5e-4)
 - `num_children` &mdash; (default: 6)
@@ -67,7 +67,7 @@ Parameters:
 - `pruning_structure` &mdash; [connections/neurons] (default: connections)
 - `sparsity` &mdash; (default: 0.5)
 - `child_epochs` &mdash; (default: 10)
-- `child_optimizer` &mdash; [sgd/adam] (default: sgd)
+- `child_optimizer` &mdash; [sgd/~~adam~~] (default: sgd)
 - `child_lr` &mdash; (default: 0.1)
 - `child_momentum` &mdash; (default: 0.9)
 - `child_wd` &mdash; (default: 5e-4)
@@ -75,9 +75,27 @@ Parameters:
 - `verbose` &mdash; [0/1] (default: 1)
 - `seed` &mdash; (default: 1)
 
+### A Note on Parent Network Training
+
+This repository is still being updated. As such, only SGD is implemented now with the learning rate schedule detailed in the paper [Loss Surfaces, Mode Connectivity, and Fast Ensembling of DNNs](https://arxiv.org/abs/1802.10026).
+
+```python
+def learning_rate_schedule(base_lr, epoch, total_epochs):
+    alpha = epoch / total_epochs
+    if alpha <= 0.5:
+        factor = 1.0
+    elif alpha <= 0.9:
+        factor = 1.0 - (alpha - 0.5) / 0.4 * 0.99
+    else:
+        factor = 0.01
+    return factor * base_lr
+```
+
 ## Evaluation
 
 Uses the checkpoints saved from the training process. Each model is evaluated and logs their predictions to a file in predictions_dir. The ensemble is then evaluated on the test set.
+
+> Important Note: The evaluations use all model files in the "checkpoints" folder that start with "model_name".
 
 ```evaluate
 python evaluate.py --predictions_dir=<PRED_DIR> \
@@ -121,3 +139,7 @@ python train.py --model wideresnet28x10 --dataset cifar100
 | Model name             | CIFAR-10 Accuracy | CIFAR-100 Accuracy |
 | ---------------------- | ----------------- | ------------------ |
 | WRN28x10 PAT (AR + 1C) | 96.45%            | 82.44%             |
+
+## Contributing
+
+Our codebase is open source and licensed under the MIT License. This current repo is in progress of being updated. Feel free to reach out with questions or improvements.
