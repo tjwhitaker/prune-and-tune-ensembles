@@ -20,9 +20,9 @@ def get_loaders(dataset='cifar10', data_path='data', train_batch_size=128, test_
              torchvision.transforms.Normalize(mean, std)])
 
         train_dataset = torchvision.datasets.CIFAR10(
-            data_path, train=True, transform=train_transforms, download=False)
+            data_path, train=True, transform=train_transforms, download=True)
         test_dataset = torchvision.datasets.CIFAR10(
-            data_path, train=False, transform=test_transforms, download=False)
+            data_path, train=False, transform=test_transforms, download=True)
     else:
         num_classes = 100
 
@@ -40,9 +40,9 @@ def get_loaders(dataset='cifar10', data_path='data', train_batch_size=128, test_
              torchvision.transforms.Normalize(mean, std)])
 
         train_dataset = torchvision.datasets.CIFAR100(
-            data_path, train=True, transform=train_transforms, download=False)
+            data_path, train=True, transform=train_transforms, download=True)
         test_dataset = torchvision.datasets.CIFAR100(
-            data_path, train=False, transform=test_transforms, download=False)
+            data_path, train=False, transform=test_transforms, download=True)
 
     train_loader = torch.utils.data.DataLoader(
         dataset=train_dataset,

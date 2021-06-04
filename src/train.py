@@ -34,7 +34,7 @@ parser.add_argument('--model', type=str, default=None, metavar='MODEL', required
 parser.add_argument('--parent_epochs', type=int, default=140, metavar='N',
                     help='number of epochs to train (default: 140)')
 parser.add_argument('--save_freq', type=int, default=10, metavar='N',
-                    help='save frequency (default: 50)')
+                    help='save frequency (default: 10)')
 parser.add_argument('--optimizer', type=str, default='sgd', metavar='OPT',
                     help='optimizer (default: sgd)')
 parser.add_argument('--lr', type=float, default=0.1, metavar='LR',
@@ -129,7 +129,7 @@ for member_path in ensemble_members:
     criterion = torch.nn.CrossEntropyLoss()
     optimizer = torch.optim.SGD(
         filter(lambda param: param.requires_grad, model.parameters()),
-        lr=args.lr, momentum=args.momentum, weight_decay=args.wd, nesterov=True)
+        lr=args.child_lr, momentum=args.child_momentum, weight_decay=args.child_wd, nesterov=True)
 
     tune_child(
         model,

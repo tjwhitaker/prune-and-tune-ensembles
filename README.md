@@ -1,5 +1,3 @@
-> 📋 A template README.md for code accompanying a Machine Learning paper
-
 # Prune and Tune Ensembles
 
 This repository is the official implementation of [Prune and Tune Ensembles](#).
@@ -15,8 +13,6 @@ To install requirements:
 ```setup
 pip install -r requirements.txt
 ```
-
-> 📋 Describe how to set up the environment, e.g. pip/conda/docker commands, download datasets, etc...
 
 ## Training
 
@@ -51,33 +47,33 @@ python train.py --checkpoint_dir=<DIR> \
 
 Parameters:
 
-- `checkpoint_dir` (default: checkpoints/)
-- `dataset` [cifar10/cifar100] (default: cifar10)
-- `data_path` (default: data/)
-- `batch_size` (default: 128)
-- `num_workers` (default: 4)
-- `model` (default: None)
+- `checkpoint_dir` &mdash; (default: checkpoints/)
+- `dataset` &mdash; [cifar10/cifar100] (default: cifar10)
+- `data_path` &mdash; (default: data/)
+- `batch_size` &mdash; (default: 128)
+- `num_workers` &mdash; (default: 4)
+- `model` &mdash; (default: None)
   - resnet18
   - densenet121
   - wideresnet28x10
-- `parent_epochs` (default: 140)
-- `save_freq` (default: 10)
-- `optimizer` [sgd/adam] (default: sgd)
-- `lr` (default: 0.1)
-- `momentum` (default: 0.9)
-- `wd` (default: 5e-4)
-- `num_children` (default: 6)
-- `pruning_method` [antirandom/random] (default: antirandom)
-- `pruning_structure` [connections/neurons] (default: connections)
-- `sparsity` (default: 0.5)
-- `child_epochs` (default: 10)
-- `child_optimizer` [sgd/adam] (default: sgd)
-- `child_lr` (default: 0.1)
-- `child_momentum` (default: 0.9)
-- `child_wd` (default: 5e-4)
-- `tuning_schedule` [onecycle/fixed] (default: onecycle)
-- `verbose` [0/1] (default: 1)
-- `seed` (default: 1)
+- `parent_epochs` &mdash; (default: 140)
+- `save_freq` &mdash; (default: 10)
+- `optimizer` &mdash; [sgd/adam] (default: sgd)
+- `lr` &mdash; (default: 0.1)
+- `momentum` &mdash; (default: 0.9)
+- `wd` &mdash; (default: 5e-4)
+- `num_children` &mdash; (default: 6)
+- `pruning_method` &mdash; [antirandom/random] (default: antirandom)
+- `pruning_structure` &mdash; [connections/neurons] (default: connections)
+- `sparsity` &mdash; (default: 0.5)
+- `child_epochs` &mdash; (default: 10)
+- `child_optimizer` &mdash; [sgd/adam] (default: sgd)
+- `child_lr` &mdash; (default: 0.1)
+- `child_momentum` &mdash; (default: 0.9)
+- `child_wd` &mdash; (default: 5e-4)
+- `tuning_schedule` &mdash; [onecycle/fixed] (default: onecycle)
+- `verbose` &mdash; [0/1] (default: 1)
+- `seed` &mdash; (default: 1)
 
 ## Evaluation
 
@@ -95,35 +91,33 @@ python evaluate.py --predictions_dir=<PRED_DIR> \
                    --seed=<SEED> \
 ```
 
-- `predictions_dir` (default: predictions/)
-- `checkpoint_dir` (default: checkpoints/)
-- `dataset` [cifar10/cifar100] (default: cifar10)
-- `data_path` (default: data/)
-- `batch_size` (default: 100)
-- `num_workers` (default: 4)
-- `model` (default: None)
+- `predictions_dir` &mdash; (default: predictions/)
+- `checkpoint_dir` &mdash; (default: checkpoints/)
+- `dataset` &mdash; [cifar10/cifar100] (default: cifar10)
+- `data_path` &mdash; (default: data/)
+- `batch_size` &mdash; (default: 100)
+- `num_workers` &mdash; (default: 4)
+- `model` &mdash; (default: None)
   - resnet18
   - densenet121
   - wideresnet28x10
-- `verbose` [0/1] (default: 1)
-- `seed` (default: 1)
+- `verbose` &mdash; [0/1] (default: 1)
+- `seed` &mdash; (default: 1)
 
 ## Results
 
+The defaults are set up to reproduce the "large training budget experiment" from the paper.
+
+That is, parent is trained for 140 epochs. 6 children are created using antirandom pruning that are each tuned for 10 epochs using the one-cycle schedule.
+
 ```reproduce
-python train.py --
+python train.py --model wideresnet28x10 --dataset cifar10
 ```
 
-Our model achieves the following performance on :
+```reproduce
+python train.py --model wideresnet28x10 --dataset cifar100
+```
 
-### [Image Classification on ImageNet](https://paperswithcode.com/sota/image-classification-on-imagenet)
-
-| Model name       | Top 1 Accuracy | Top 5 Accuracy |
-| ---------------- | -------------- | -------------- |
-| My awesome model | 85%            | 95%            |
-
-> 📋 Include a table of results from your paper, and link back to the leaderboard for clarity and context. If your main result is a figure, include that figure and link to the command or notebook to reproduce it.
-
-## Contributing
-
-> 📋 Pick a licence and describe how to contribute to your code repository.
+| Model name             | CIFAR-10 Accuracy | CIFAR-100 Accuracy |
+| ---------------------- | ----------------- | ------------------ |
+| WRN28x10 PAT (AR + 1C) | 96.45%            | 82.44%             |
