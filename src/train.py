@@ -18,10 +18,10 @@ parser.add_argument('--seed', type=int, default=1,
 parser.add_argument('--verbose', type=int, default=1,
                     metavar='S', help='logging verbosity (default: 1)')
 # Data Args
-parser.add_argument('--dataset', type=str, default='CIFAR10', metavar='DATASET',
-                    help='dataset name (default: CIFAR10)')
-parser.add_argument('--data_path', type=str, default=None, metavar='PATH',
-                    help='path to datasets location (default: None)')
+parser.add_argument('--dataset', type=str, default='cifar10', metavar='DATASET',
+                    help='dataset name (default: cifar10)')
+parser.add_argument('--data_path', type=str, default='data', metavar='PATH',
+                    help='path to datasets location (default: data)')
 parser.add_argument('--batch_size', type=int, default=128, metavar='N',
                     help='input batch size (default: 128)')
 parser.add_argument('--num-workers', type=int, default=4, metavar='N',

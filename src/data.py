@@ -2,8 +2,8 @@ import torch
 import torchvision
 
 
-def get_loaders(dataset='CIFAR10', data_path='data', train_batch_size=128, test_batch_size=1, num_workers=4):
-    if dataset == 'CIFAR10':
+def get_loaders(dataset='cifar10', data_path='data', train_batch_size=128, test_batch_size=1, num_workers=4):
+    if dataset == 'cifar10':
         num_classes = 10
 
         mean = (0.4914, 0.4822, 0.4465)
