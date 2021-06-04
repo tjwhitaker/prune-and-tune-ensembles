@@ -9,7 +9,7 @@ import numpy as np
 
 # Courtesy of https://github.com/meliketoy/wide-resnet.pytorch
 
-__all__ = ['WideResNet28x10']
+__all__ = ['wideresnet28x10']
 
 
 def conv3x3(in_planes, out_planes, stride=1):
@@ -91,12 +91,5 @@ class WideResNetBase(nn.Module):
         return out
 
 
-def WideResNet28x10(**kwargs):
-    return WideResNetBase(28, 10, 0, 10)
-
-
-if __name__ == '__main__':
-    net = Wide_ResNet(28, 10, 0.3, 10)
-    y = net(Variable(torch.randn(1, 3, 32, 32)))
-
-    print(y.size())
+def wideresnet28x10(**kwargs):
+    return WideResNetBase(28, 10, 0, **kwargs)

@@ -26,44 +26,13 @@ parser.add_argument('--dataset', type=str, default='cifar10', metavar='DATASET',
                     help='dataset name (default: cifar10)')
 parser.add_argument('--data_path', type=str, default=None, metavar='PATH',
                     help='path to datasets location (default: None)')
-parser.add_argument('--batch_size', type=int, default=128, metavar='N',
-                    help='input batch size (default: 128)')
+parser.add_argument('--batch_size', type=int, default=100, metavar='N',
+                    help='input batch size (default: 100)')
 parser.add_argument('--num-workers', type=int, default=4, metavar='N',
                     help='number of workers (default: 4)')
 
 parser.add_argument('--model', type=str, default=None, metavar='MODEL', required=True,
                     help='model name (default: None)')
-
-# Parent Training Args
-parser.add_argument('--parent_epochs', type=int, default=140, metavar='N',
-                    help='number of epochs to train (default: 140)')
-parser.add_argument('--save_freq', type=int, default=50, metavar='N',
-                    help='save frequency (default: 50)')
-parser.add_argument('--lr', type=float, default=0.1, metavar='LR',
-                    help='initial learning rate (default: 0.1)')
-parser.add_argument('--momentum', type=float, default=0.9, metavar='M',
-                    help='SGD momentum (default: 0.9)')
-parser.add_argument('--wd', type=float, default=5e-4, metavar='WD',
-                    help='weight decay (default: 5e-4)')
-
-# Ensemble Args
-parser.add_argument('--num_children', type=int, default=6, metavar='N',
-                    help='number of ensemble children (default: 6)')
-parser.add_argument('--pruning_method', type=str, default='antirandom', metavar='M',
-                    help='pruning method (default: antirandom)')
-parser.add_argument('--pruning_structure', type=str, default='connections', metavar='S',
-                    help='pruning structure (default: connections)')
-parser.add_argument('--sparsity', type=float, default=0.5, metavar='S',
-                    help='pruning sparsity (default: 0.5)')
-
-
-# Tuning Args
-parser.add_argument('--child_epochs', type=int, default=10, metavar='N',
-                    help='number of epochs to train (default: 10)')
-parser.add_argument('--tuning_schedule', type=str, default='onecycle', metavar='SCH',
-                    help='Tuning schedule (default: onecycle)')
-parser.add_argument('--tuning_lr', type=float, default=0.1, metavar='LR',
-                    help='initial learning rate (default: 0.1)')
 
 
 args = parser.parse_args()
@@ -125,7 +94,7 @@ for filename in os.listdir(args.predictions_dir):
         predictions.append(pickle.load(
             open(os.path.join(args.predictions_dir, filename), "rb")))
 
-predictions = np.array(predictions).squeeze()
+predictions = np.array(predictions, dtype=object).squeeze()
 logits_sum = np.sum(predictions, axis=0)
 num_correct = 0
 

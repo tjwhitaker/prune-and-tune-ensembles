@@ -33,8 +33,10 @@ parser.add_argument('--model', type=str, default=None, metavar='MODEL', required
 # Parent Training Args
 parser.add_argument('--parent_epochs', type=int, default=140, metavar='N',
                     help='number of epochs to train (default: 140)')
-parser.add_argument('--save_freq', type=int, default=50, metavar='N',
+parser.add_argument('--save_freq', type=int, default=10, metavar='N',
                     help='save frequency (default: 50)')
+parser.add_argument('--optimizer', type=str, default='sgd', metavar='OPT',
+                    help='optimizer (default: sgd)')
 parser.add_argument('--lr', type=float, default=0.1, metavar='LR',
                     help='initial learning rate (default: 0.1)')
 parser.add_argument('--momentum', type=float, default=0.9, metavar='M',
@@ -56,10 +58,16 @@ parser.add_argument('--sparsity', type=float, default=0.5, metavar='S',
 # Tuning Args
 parser.add_argument('--child_epochs', type=int, default=10, metavar='N',
                     help='number of epochs to train (default: 10)')
+parser.add_argument('--child_optimizer', type=str, default='sgd', metavar='OPT',
+                    help='optimizer (default: sgd)')
+parser.add_argument('--child_lr', type=float, default=0.1, metavar='LR',
+                    help='initial learning rate (default: 0.1)')
+parser.add_argument('--child_momentum', type=float, default=0.9, metavar='M',
+                    help='SGD momentum (default: 0.9)')
+parser.add_argument('--child_wd', type=float, default=5e-4, metavar='WD',
+                    help='weight decay (default: 5e-4)')
 parser.add_argument('--tuning_schedule', type=str, default='onecycle', metavar='SCH',
                     help='Tuning schedule (default: onecycle)')
-parser.add_argument('--tuning_lr', type=float, default=0.1, metavar='LR',
-                    help='initial learning rate (default: 0.1)')
 
 
 args = parser.parse_args()
@@ -130,7 +138,7 @@ for member_path in ensemble_members:
         optimizer,
         args.child_epochs,
         args.tuning_schedule,
-        args.tuning_lr,
+        args.child_lr,
         train_loader,
         test_loader,
         args.verbose,

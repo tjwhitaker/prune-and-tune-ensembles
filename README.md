@@ -20,47 +20,99 @@ pip install -r requirements.txt
 
 ## Training
 
-Our code is split up into three commands.
-
-Train the parent network.
+Train the parent network, create the ensemble and tune the ensemble members.
 
 ```train
-python train.py --dir=<DIR> \
+python train.py --checkpoint_dir=<DIR> \
                 --dataset=<DATASET> \
                 --data_path=<DATA_PATH> \
+                --batch_size=<BATCH_SIZE> \
+                --num_workers=<num_workers> \
                 --model=<MODEL> \
-                --epochs=<PARENT_EPOCHS> \
+                --parent_epochs=<PARENT_EPOCHS> \
+                --save_freq=<SAVE_FREQ> \
                 --optimizer=<OPTIMIZER> \
-                --lr=<LR>
+                --lr=<LR> \
+                --momentum=<M> \
+                --wd=<WD> \
+                --num_children=<NUM> \
+                --pruning_method=<METHOD> \
+                --pruning_structure=<STRUCTURE> \
+                --sparsity=<SPARSITY> \
+                --child_epochs=<CHILD_EPOCHS> \
+                --child_optimizer=<OPTIMIZER> \
+                --child_lr=<LR> \
+                --child_momentum=<M> \
+                --child_wd=<WD> \
+                --tuning_schedule=<SCHED> \
+                --verbose=<V> \
+                --seed=<SEED> \
 ```
 
 Parameters:
 
-- `DIR` &mdash; path to training directory where checkpoints will be stored (default: checkpoints/)
-- `DATASET` &mdash; dataset name [CIFAR10/CIFAR100] (default: CIFAR10)
-- `PATH` &mdash; path to the data directory (default: data/)
-- `MODEL` &mdash; Model name:
-  - LeNet
-  - ResNet
-  - DenseNet
-  - WideResNet
-
-```reproduce
-python train.py --checkpoint_dir
-```
+- `checkpoint_dir` (default: checkpoints/)
+- `dataset` [cifar10/cifar100] (default: cifar10)
+- `data_path` (default: data/)
+- `batch_size` (default: 128)
+- `num_workers` (default: 4)
+- `model` (default: None)
+  - resnet18
+  - densenet121
+  - wideresnet28x10
+- `parent_epochs` (default: 140)
+- `save_freq` (default: 10)
+- `optimizer` [sgd/adam] (default: sgd)
+- `lr` (default: 0.1)
+- `momentum` (default: 0.9)
+- `wd` (default: 5e-4)
+- `num_children` (default: 6)
+- `pruning_method` [antirandom/random] (default: antirandom)
+- `pruning_structure` [connections/neurons] (default: connections)
+- `sparsity` (default: 0.5)
+- `child_epochs` (default: 10)
+- `child_optimizer` [sgd/adam] (default: sgd)
+- `child_lr` (default: 0.1)
+- `child_momentum` (default: 0.9)
+- `child_wd` (default: 5e-4)
+- `tuning_schedule` [onecycle/fixed] (default: onecycle)
+- `verbose` [0/1] (default: 1)
+- `seed` (default: 1)
 
 ## Evaluation
 
-To evaluate my model on ImageNet, run:
+Uses the checkpoints saved from the training process. Each model is evaluated and logs their predictions to a file in predictions_dir. The ensemble is then evaluated on the test set.
 
 ```evaluate
-python evaluate.py --dir=<DIR> \
+python evaluate.py --predictions_dir=<PRED_DIR> \
+                   --checkpoint_dir=<DIR> \
                    --dataset=<DATASET> \
+                   --data_path=<DATA_PATH> \
+                   --batch_size=<BATCH_SIZE> \
+                   --num_workers=<num_workers> \
+                   --model=<MODEL> \
+                   --verbose=<V> \
+                   --seed=<SEED> \
 ```
 
-> 📋 Describe how to evaluate the trained models on benchmarks reported in the paper, give commands that produce the results (section below).
+- `predictions_dir` (default: predictions/)
+- `checkpoint_dir` (default: checkpoints/)
+- `dataset` [cifar10/cifar100] (default: cifar10)
+- `data_path` (default: data/)
+- `batch_size` (default: 100)
+- `num_workers` (default: 4)
+- `model` (default: None)
+  - resnet18
+  - densenet121
+  - wideresnet28x10
+- `verbose` [0/1] (default: 1)
+- `seed` (default: 1)
 
 ## Results
+
+```reproduce
+python train.py --
+```
 
 Our model achieves the following performance on :
 
