@@ -4,15 +4,19 @@ import models
 import os
 import sys
 from data import get_loaders
+from utils import init_prune_layers
+from utils import train_parent, create_ensemble, tune_child
 
 parser = argparse.ArgumentParser(
     description='Prune and Tune Ensembles')
 
-parser.add_argument('--dir', type=str, default='checkpoints', metavar='DIR',
+
+parser.add_argument('--checkpoint_dir', type=str, default='checkpoints', metavar='DIR',
                     help='training directory (default: checkpoints)')
 parser.add_argument('--seed', type=int, default=1,
                     metavar='S', help='random seed (default: 1)')
-
+parser.add_argument('--verbose', type=int, default=1,
+                    metavar='S', help='logging verbosity (default: 1)')
 # Data Args
 parser.add_argument('--dataset', type=str, default='CIFAR10', metavar='DATASET',
                     help='dataset name (default: CIFAR10)')
@@ -45,6 +49,8 @@ parser.add_argument('--pruning_method', type=str, default='antirandom', metavar=
                     help='pruning method (default: antirandom)')
 parser.add_argument('--pruning_structure', type=str, default='connections', metavar='S',
                     help='pruning structure (default: connections)')
+parser.add_argument('--sparsity', type=float, default=0.5, metavar='S',
+                    help='pruning sparsity (default: 0.5)')
 
 
 # Tuning Args
@@ -52,13 +58,15 @@ parser.add_argument('--child_epochs', type=int, default=10, metavar='N',
                     help='number of epochs to train (default: 10)')
 parser.add_argument('--tuning_schedule', type=str, default='onecycle', metavar='SCH',
                     help='Tuning schedule (default: onecycle)')
+parser.add_argument('--tuning_lr', type=float, default=0.1, metavar='LR',
+                    help='initial learning rate (default: 0.1)')
 
 
 args = parser.parse_args()
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-os.makedirs(args.dir, exist_ok=True)
+os.makedirs(args.checkpoint_dir, exist_ok=True)
 
 (train_loader, test_loader), num_classes = get_loaders(
     dataset=args.dataset,
@@ -70,23 +78,6 @@ os.makedirs(args.dir, exist_ok=True)
 architecture = getattr(models, args.model)
 model = architecture(num_classes=num_classes).to(device)
 
-
-def learning_rate_schedule(base_lr, epoch, total_epochs):
-    alpha = epoch / total_epochs
-    if alpha <= 0.5:
-        factor = 1.0
-    elif alpha <= 0.9:
-        factor = 1.0 - (alpha - 0.5) / 0.4 * 0.99
-    else:
-        factor = 0.01
-    return factor * base_lr
-
-
-def adjust_learning_rate(optimizer, lr):
-    for param_group in optimizer.param_groups:
-        param_group['lr'] = lr
-    return lr
-
 ###################
 # Train the Parent
 ###################
@@ -97,104 +88,51 @@ optimizer = torch.optim.SGD(
     filter(lambda param: param.requires_grad, model.parameters()),
     lr=args.lr, momentum=args.momentum, weight_decay=args.wd, nesterov=True)
 
-for epoch in range(args.epochs):
-    train_loss = 0
-    test_loss = 0
-    lr = learning_rate_schedule(args.lr, epoch, args.epochs)
-    adjust_learning_rate(optimizer, lr)
+train_parent(model, optimizer, criterion, args.parent_epochs, args.lr,
+             train_loader, test_loader, args.verbose, device)
 
-    # Training Loop
-    model.train()
-    num_train_batches = 0
-    for _, (inputs, target) in enumerate(train_loader):
-        inputs = inputs.to(device)
-        target = target.to(device)
+torch.save(model.state_dict(), os.path.join(
+    args.checkpoint_dir, f"{args.model}-p.pt"))
 
-        prediction = model(inputs)
-
-        loss = criterion(prediction, target)
-        train_loss += loss.item()
-
-        model.zero_grad()
-        loss.backward()
-        optimizer.step()
-        num_train_batches += 1
-
-    # Eval Loop
-    model.eval()
-    with torch.no_grad():
-        num_correct = 0
-        num_test_batches = 0
-        for _, (inputs, target) in enumerate(test_loader):
-            inputs = inputs.to(device)
-            target = target.to(device)
-
-            output = model(inputs)
-            loss = criterion(output, target)
-            test_loss += loss.item()
-
-            _, predictions = torch.max(output, -1)
-
-            num_correct += (predictions == target).sum().data.item()
-
-            num_test_batches += 1
-
-        accuracy = (num_correct / len(test_loader.dataset)) * 100
-
-    if epoch % 1 == 0:
-        print(f"Epoch: {epoch}")
-        print(
-            f"Train Loss: {train_loss / num_train_batches}, Test Loss: {test_loss / num_test_batches}, Accuracy:{accuracy}")
-
-    if (epoch % args.save_freq == 0) or (epoch + 1 == args.epochs):
-        torch.save(model.state_dict(), os.path.join(
-            args.dir, f"{args.model}.pt"))
 
 ##############################
 # Prune and Tune The Ensemble
 ##############################
 
-# Only antirandom + one cycle set up for now
+# Ensemble members contains a list of paths to the ensemble member state_dicts
+ensemble_members = create_ensemble(
+    args.model,
+    num_classes,
+    args.num_children,
+    os.path.join(args.checkpoint_dir, f"{args.model}-p.pt"),
+    args.pruning_method,
+    args.pruning_structure,
+    args.sparsity,
+    args.checkpoint_dir,
+    device)
 
-for i in range(3):
+
+for member_path in ensemble_members:
     architecture = getattr(models, args.model)
     model = architecture(num_classes=num_classes).to(device)
-    model.load_state_dict(torch.load(
-        os.path.join(args.dir, f"{args.model}.pt")))
+    init_prune_layers(model)
+    model.load_state_dict(torch.load(member_path))
 
-    params = []
-    for name, module in list(model.named_modules())[:-1]:
-        if isinstance(module, torch.nn.Conv2d) or isinstance(module, torch.nn.Linear):
-            params.append((module, "weight"))
+    criterion = torch.nn.CrossEntropyLoss()
+    optimizer = torch.optim.SGD(
+        filter(lambda param: param.requires_grad, model.parameters()),
+        lr=args.lr, momentum=args.momentum, weight_decay=args.wd, nesterov=True)
 
-    for p in params:
-        prune.random_unstructured(p[0], p[1], amount=0.5)
-
-    # prune.global_unstructured(
-    #     params, pruning_method=prune.RandomUnstructured, amount=0.2)
-
-    tune(model, train_loader, test_loader, device)
-
-    torch.save(model.state_dict(),
-               f"checkpoints/wrn_pruned_{run}_50p_c100.pt")
-
-    anti = WideResNetBase(28, 10, 0, 10).to(device)
-    anti.load_state_dict(torch.load(f"checkpoints/wrn_100_3.pt"))
-
-    init_prune_layers(anti)
-
-    # Flip all bits in model weight_mask
-    params = []
-    for module in model.state_dict().keys():
-        if 'weight_mask' in module:
-            mask = (1 - model.state_dict()[module]).to(device)
-            name = module.rsplit('.', 1)[0]
-            params.append((name, mask))
-
-    for p in params:
-        prune.custom_from_mask(attrgetter(p[0])(anti), "weight", p[1])
-
-    tune(anti, train_loader, test_loader, device)
-
-    torch.save(anti.state_dict(),
-               f"checkpoints/wrn_pruned_{run}_50p_c100_anti.pt")
+    tune_child(
+        model,
+        member_path,
+        criterion,
+        optimizer,
+        args.child_epochs,
+        args.tuning_schedule,
+        args.tuning_lr,
+        train_loader,
+        test_loader,
+        args.verbose,
+        device
+    )

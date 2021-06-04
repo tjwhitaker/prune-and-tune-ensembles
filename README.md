@@ -45,51 +45,9 @@ Parameters:
   - DenseNet
   - WideResNet
 
-Create the ensemble via pruning.
-
-```prune
-python prune.py --dir=<DIR> \
-                --dataset=<DATASET> \
-                --data_path=<DATA_PATH> \
-                --model=<MODEL> \
-                --num_children=<NUM_CHILDREN> \
-                --method=<METHOD>\
+```reproduce
+python train.py --checkpoint_dir
 ```
-
-Parameters:
-
-- `DIR` &mdash; path to training directory where checkpoints will be stored (default: checkpoints/)
-- `DATASET` &mdash; dataset name [CIFAR10/CIFAR100] (default: CIFAR10)
-- `PATH` &mdash; path to the data directory (default: data/)
-- `MODEL` &mdash; Model name:
-  - LeNet
-  - ResNet
-  - DenseNet
-  - WideResNet
-
-Tune the ensemble.
-
-```tune
-python tune.py --dir=<DIR> \
-               --dataset=<DATASET> \
-               --data_path=<DATA_PATH> \
-               --model=<MODEL> \
-               --epochs=<PARENT_EPOCHS> \
-               --optimizer=<OPTIMIZER> \
-               --lr=<LR> \
-               --schedule=<SCHEDULE>
-```
-
-Parameters:
-
-- `DIR` &mdash; path to training directory where checkpoints will be stored (default: checkpoints/)
-- `DATASET` &mdash; dataset name [CIFAR10/CIFAR100] (default: CIFAR10)
-- `PATH` &mdash; path to the data directory (default: data/)
-- `MODEL` &mdash; Model name:
-  - LeNet
-  - ResNet
-  - DenseNet
-  - WideResNet
 
 ## Evaluation
 
@@ -101,14 +59,6 @@ python evaluate.py --dir=<DIR> \
 ```
 
 > 📋 Describe how to evaluate the trained models on benchmarks reported in the paper, give commands that produce the results (section below).
-
-## Pre-trained Models
-
-You can download pretrained models here:
-
-- [My awesome model](https://drive.google.com/mymodel.pth) trained on ImageNet using parameters x,y,z.
-
-> 📋 Give a link to where/how the pretrained models can be downloaded and how they were trained (if applicable). Alternatively you can have an additional column in your results table with a link to the models.
 
 ## Results
 

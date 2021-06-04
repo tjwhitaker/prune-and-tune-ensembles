@@ -130,4 +130,5 @@ dmypy.json
 
 data/
 src/checkpoints/
+src/predictions/
 *.pt

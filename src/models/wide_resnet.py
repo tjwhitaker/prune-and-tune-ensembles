@@ -9,6 +9,8 @@ import numpy as np
 
 # Courtesy of https://github.com/meliketoy/wide-resnet.pytorch
 
+__all__ = ['WideResNet28x10']
+
 
 def conv3x3(in_planes, out_planes, stride=1):
     return nn.Conv2d(in_planes, out_planes, kernel_size=3, stride=stride, padding=1, bias=True)
@@ -87,6 +89,10 @@ class WideResNetBase(nn.Module):
         out = self.linear(out)
 
         return out
+
+
+def WideResNet28x10(**kwargs):
+    return WideResNetBase(28, 10, 0, 10)
 
 
 if __name__ == '__main__':
