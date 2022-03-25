@@ -10,6 +10,10 @@ from utils import train_parent, create_ensemble, tune_child
 parser = argparse.ArgumentParser(
     description='Prune and Tune Ensembles')
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 8d7ab12caf393fc44a94e427c450b2ee6150a206
 parser.add_argument('--checkpoint_dir', type=str, default='checkpoints', metavar='DIR',
                     help='training directory (default: checkpoints)')
 parser.add_argument('--seed', type=int, default=1,
@@ -89,6 +93,10 @@ model = architecture(num_classes=num_classes).to(device)
 # Train the Parent
 ###################
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 8d7ab12caf393fc44a94e427c450b2ee6150a206
 criterion = torch.nn.CrossEntropyLoss()
 optimizer = torch.optim.SGD(
     filter(lambda param: param.requires_grad, model.parameters()),

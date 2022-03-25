@@ -102,7 +102,10 @@ python evaluate.py --predictions_dir=<PRED_DIR> \
                    --checkpoint_dir=<DIR> \
                    --dataset=<DATASET> \
                    --data_path=<DATA_PATH> \
+<<<<<<< HEAD
                    --corrupted=<True|False>
+=======
+>>>>>>> 8d7ab12caf393fc44a94e427c450b2ee6150a206
                    --batch_size=<BATCH_SIZE> \
                    --num_workers=<num_workers> \
                    --model=<MODEL> \
@@ -114,7 +117,10 @@ python evaluate.py --predictions_dir=<PRED_DIR> \
 - `checkpoint_dir` &mdash; (default: checkpoints/)
 - `dataset` &mdash; [cifar10/cifar100] (default: cifar10)
 - `data_path` &mdash; (default: data/)
+<<<<<<< HEAD
 - `corrupted` &mdash; [True/False] (default: False)
+=======
+>>>>>>> 8d7ab12caf393fc44a94e427c450b2ee6150a206
 - `batch_size` &mdash; (default: 100)
 - `num_workers` &mdash; (default: 4)
 - `model` &mdash; (default: None)
@@ -131,6 +137,7 @@ The defaults are set up to reproduce the "large training budget experiment" from
 That is, parent is trained for 140 epochs. 6 children are created using antirandom pruning that are each tuned for 10 epochs using the one-cycle schedule.
 
 ```reproduce
+<<<<<<< HEAD
 python3 train.py --model wideresnet28x10 --dataset cifar10
 python3 evaluate.py --model wideresnet28x10 --dataset cifar10
 ```
@@ -138,12 +145,20 @@ python3 evaluate.py --model wideresnet28x10 --dataset cifar10
 ```reproduce
 python3 train.py --model wideresnet28x10 --dataset cifar100
 python3 evaluate.py --model wideresnet28x10 --dataset cifar100
+=======
+python train.py --model wideresnet28x10 --dataset cifar10
+```
+
+```reproduce
+python train.py --model wideresnet28x10 --dataset cifar100
+>>>>>>> 8d7ab12caf393fc44a94e427c450b2ee6150a206
 ```
 
 | Model name             | CIFAR-10 Accuracy | CIFAR-100 Accuracy |
 | ---------------------- | ----------------- | ------------------ |
 | WRN28x10 PAT (AR + 1C) | 96.45%            | 82.44%             |
 
+<<<<<<< HEAD
 To test on the out-of-distribution corrupted variants, you need to download the corrupted datasets from https://zenodo.org/record/2535967 and https://zenodo.org/record/3555552. The corrupted github repo is https://github.com/hendrycks/robustness.
 
 Put them in the data folder so we have `data/CIFAR-10-C/` and `data/CIFAR-100-C/`.
@@ -155,6 +170,8 @@ python3 evaluate.py --model wideresnet28x10 --dataset cifar10 --corrupted True
 python3 evaluate.py --model wideresnet28x10 --dataset cifar100 --corrupted True
 ```
 
+=======
+>>>>>>> 8d7ab12caf393fc44a94e427c450b2ee6150a206
 ## Contributing
 
 Our codebase is open source and licensed under the MIT License. This current repo is in progress of being updated. Feel free to reach out with questions or improvements.

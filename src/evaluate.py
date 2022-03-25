@@ -5,8 +5,14 @@ import pickle
 import os
 import sys
 import numpy as np
+<<<<<<< HEAD
 from data import get_loaders, get_corrupted_loaders
 from utils import init_prune_layers
+=======
+from data import get_loaders
+from utils import init_prune_layers
+from utils import train_parent, create_ensemble, tune_child
+>>>>>>> 8d7ab12caf393fc44a94e427c450b2ee6150a206
 
 parser = argparse.ArgumentParser(
     description='Prune and Tune Ensembles')
@@ -29,17 +35,26 @@ parser.add_argument('--batch_size', type=int, default=100, metavar='N',
                     help='input batch size (default: 100)')
 parser.add_argument('--num-workers', type=int, default=4, metavar='N',
                     help='number of workers (default: 4)')
+<<<<<<< HEAD
 parser.add_argument('--corrupted', type=bool, default=False, metavar='C', 
                     help='test on corrupted dataset (default: False)')
 parser.add_argument('--model', type=str, default=None, metavar='MODEL', required=True,
                     help='model name (default: None)')
 
+=======
+
+parser.add_argument('--model', type=str, default=None, metavar='MODEL', required=True,
+                    help='model name (default: None)')
+
+
+>>>>>>> 8d7ab12caf393fc44a94e427c450b2ee6150a206
 args = parser.parse_args()
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 os.makedirs(args.predictions_dir, exist_ok=True)
 
+<<<<<<< HEAD
 if args.corrupted:
     test_loader, targets, num_classes = get_corrupted_loaders(
         dataset=args.dataset,
@@ -59,6 +74,16 @@ else:
 # Make Predictions
 ###################
 
+=======
+(train_loader, test_loader), num_classes = get_loaders(
+    dataset=args.dataset,
+    data_path=args.data_path,
+    train_batch_size=args.batch_size,
+    test_batch_size=args.batch_size,
+    num_workers=args.num_workers)
+
+# Make predictions for each model in the ensemble
+>>>>>>> 8d7ab12caf393fc44a94e427c450b2ee6150a206
 for filename in os.listdir(args.checkpoint_dir):
     if filename.startswith(args.model):
         architecture = getattr(models, args.model)
@@ -77,6 +102,7 @@ for filename in os.listdir(args.checkpoint_dir):
             model.eval()
 
             num_correct = 0
+<<<<<<< HEAD
 
             for _, (inputs, _) in enumerate(test_loader):
                 inputs = inputs.to(device)
@@ -84,6 +110,19 @@ for filename in os.listdir(args.checkpoint_dir):
                 logits = []
 
                 output = model(inputs)
+=======
+            targets = []
+
+            for _, (inputs, target) in enumerate(test_loader):
+                inputs = inputs.to(device)
+                target = target.to(device)
+
+                targets.append(target)
+
+                logits = []
+
+                output = torch.softmax(model(inputs), 1)
+>>>>>>> 8d7ab12caf393fc44a94e427c450b2ee6150a206
                 logits.append(output.cpu().numpy())
 
                 predictions.append(logits)
@@ -92,10 +131,14 @@ for filename in os.listdir(args.checkpoint_dir):
             pickle.dump(predictions, open(os.path.join(
                 args.predictions_dir, f"{filename}.p"), "wb"))
 
+<<<<<<< HEAD
 ######################
 # Combine predictions
 ######################
 
+=======
+# Combine predictions
+>>>>>>> 8d7ab12caf393fc44a94e427c450b2ee6150a206
 predictions = []
 
 for filename in os.listdir(args.predictions_dir):
@@ -103,6 +146,7 @@ for filename in os.listdir(args.predictions_dir):
         predictions.append(pickle.load(
             open(os.path.join(args.predictions_dir, filename), "rb")))
 
+<<<<<<< HEAD
 predictions = np.array(predictions, dtype=np.float).squeeze()
 predictions = torch.from_numpy(predictions)
 
@@ -159,3 +203,18 @@ for bin_lower, bin_upper in zip(bin_lowers, bin_uppers):
         ece += torch.abs(avg_confidence_in_bin - accuracy_in_bin) * prop_in_bin
 
 print(f"ECE: {ece.item()}")
+=======
+predictions = np.array(predictions, dtype=object).squeeze()
+logits_sum = np.sum(predictions, axis=0)
+num_correct = 0
+
+for i, (_, target) in enumerate(test_loader):
+    target = target.numpy()
+    prediction = np.argmax(logits_sum[i], axis=1)
+    num_correct += np.sum(prediction == target)
+
+
+accuracy = (num_correct / len(test_loader.dataset)) * 100
+
+print("Accuracy: ", accuracy)
+>>>>>>> 8d7ab12caf393fc44a94e427c450b2ee6150a206
