@@ -1,9 +1,6 @@
 import torch
 import torchvision
-<<<<<<< HEAD
 import numpy as np
-=======
->>>>>>> 8d7ab12caf393fc44a94e427c450b2ee6150a206
 
 
 def get_loaders(dataset='cifar10', data_path='data', train_batch_size=128, test_batch_size=1, num_workers=4):
@@ -52,17 +49,11 @@ def get_loaders(dataset='cifar10', data_path='data', train_batch_size=128, test_
         dataset=train_dataset,
         batch_size=train_batch_size,
         num_workers=num_workers,
-<<<<<<< HEAD
         shuffle=True)
-=======
-        shuffle=True,
-        pin_memory=True)
->>>>>>> 8d7ab12caf393fc44a94e427c450b2ee6150a206
     test_loader = torch.utils.data.DataLoader(
         dataset=test_dataset,
         batch_size=test_batch_size,
         num_workers=num_workers,
-<<<<<<< HEAD
         shuffle=False)
 
     return train_loader, test_loader, num_classes
@@ -145,9 +136,3 @@ def get_corrupted_loaders(dataset='cifar10', data_path='data', train_batch_size=
         shuffle=False)
 
     return test_loader, labels, num_classes
-=======
-        shuffle=False,
-        pin_memory=True)
-
-    return (train_loader, test_loader), num_classes
->>>>>>> 8d7ab12caf393fc44a94e427c450b2ee6150a206
